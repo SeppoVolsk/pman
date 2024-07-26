@@ -1,2 +1,23 @@
 #!/bin/bash
-grep "$1" $HOME/etc/vault
+
+# $0 — это путь к сценарию, а basename печатает окончательное имя файла
+PROGRAM=$(basename $0)
+# Расположение файла - хранилища паролей
+DATABASE=$HOME/etc/vault
+
+# Убедитесь, что сценарию был предоставлен хотя бы один аргумент
+# Выражение >&2 перенаправляет echo для печати в stderr вместо stdout
+if [ $# -ne 1 ]; then
+>&2 echo "$PROGRAM: look up passwords by string"
+>&2 echo "Usage: $PROGRAM string"
+exit 1
+fi
+
+#Сохраните первый аргумент в понятной именованной переменной
+searchstring="$1"
+# Поиск в файле-хранилище и вывод сообщения об ошибке, если ничего не совпадает
+grep "$searchstring" "$DATABASE"
+if [ $? -ne 0 ]; then
+>&2 echo "$PROGRAM: no matches for '$searchstring'"
+exit 1
+fi
